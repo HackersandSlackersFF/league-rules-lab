@@ -1,0 +1,1900 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>League Rules Lab • Fantasy Format Explorer</title>
+<meta name="description" content="Compare head-to-head, median, all-play and points-only fantasy football standings. A read-only ESPN league scoring prototype.">
+<style>
+:root{color-scheme:dark;--bg:#090e19;--surface:#121b2b;--surface2:#172235;--surface3:#1d2c41;--stroke:#2b3b51;--text:#eff4fa;--muted:#9badbf;--muted2:#74899e;--accent:#f5bc64;--accent2:#d9973e;--cyan:#6bcbd8;--green:#7fdfbd;--red:#f29c9c;--shadow:0 12px 45px #0003;--radius:17px}*{box-sizing:border-box}body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:radial-gradient(ellipse at 84% -18%,#18394d 0,transparent 38%),radial-gradient(ellipse at -10% 12%,#282539 0,transparent 36%),var(--bg);color:var(--text);font-size:14px;line-height:1.5}button,select{font:inherit}button{cursor:pointer}button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid var(--cyan);outline-offset:3px}a{color:var(--cyan)}.shell{max-width:1240px;padding:0 24px 64px;margin:auto}.topbar{border-bottom:1px solid #27344780;background:#0a111f96}.navinner{max-width:1240px;padding:15px 24px;display:flex;align-items:center;justify-content:space-between;margin:auto;gap:10px}.brand{display:flex;gap:12px;align-items:center;font-weight:790;letter-spacing:.1px;font-size:16px}.brandmark{display:grid;place-items:center;background:linear-gradient(135deg,var(--accent),#b4773a);color:#19202a;border-radius:12px;width:36px;height:36px;font-weight:900}.pill{border:1px solid var(--stroke);padding:5px 10px;border-radius:999px;color:var(--muted);font-size:11px;font-weight:750;letter-spacing:.8px;text-transform:uppercase;white-space:nowrap}.pill.demo{border-color:#a77737;color:#ffd39a;background:#f1b25616}.pill.live{border-color:#449e91;color:#a8eadb;background:#4cdec516}.eyebrow{text-transform:uppercase;letter-spacing:2px;color:var(--accent);font-size:11px;font-weight:800}.hero{padding:39px 0 25px;display:flex;justify-content:space-between;align-items:flex-end;gap:22px}.hero h1{font-size:clamp(29px,4.7vw,47px);line-height:1.08;letter-spacing:-1.7px;margin:10px 0 10px;font-weight:850}.hero p{max-width:675px;color:var(--muted);font-size:14px;margin:0}.source-box{font-size:11px;color:var(--muted);text-align:right;max-width:280px;line-height:1.6}.source-box strong{color:var(--text);display:block}.panel{background:linear-gradient(155deg,var(--surface) 10%,#111928 100%);border:1px solid var(--stroke);border-radius:var(--radius);box-shadow:var(--shadow)}.controls{padding:19px 22px;margin:0 0 20px;display:grid;grid-template-columns:1fr 1fr minmax(310px,2fr);align-items:end;gap:20px}.control>label{display:block;color:var(--muted);font-size:11px;letter-spacing:.6px;text-transform:uppercase;font-weight:700;margin:0 0 7px}select{width:100%;appearance:none;border:1px solid #394a60;border-radius:10px;background:var(--surface2);color:var(--text);padding:12px 36px 12px 12px;outline:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23adc1d4' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;background-size:16px}.segments{display:flex;flex-wrap:wrap;gap:7px}.seg{border:1px solid #34445a;background:#182437;color:var(--muted);border-radius:9px;padding:10px 12px;white-space:nowrap;font-weight:700;font-size:12px;transition:.14s}.seg.active{background:#f5bc641e;color:#f7cd8c;border-color:#dca352}.seg:hover{color:white}.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:20px}.metric{padding:20px}.metric .label{font-size:12px;color:var(--muted);margin-bottom:14px}.metric .number{font-size:29px;line-height:1.15;letter-spacing:-1px;font-weight:850}.metric .foot{font-size:11px;color:var(--muted2);margin-top:7px}.metric .number.gold{color:var(--accent)}.metric .number.cyan{color:var(--cyan)}.cols{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(325px,1fr);gap:18px;margin-bottom:20px}.modulehead{display:flex;gap:14px;align-items:flex-start;justify-content:space-between;padding:21px 21px 15px}.modulehead h2{font-size:17px;line-height:1.2;letter-spacing:-.3px;margin:0 0 5px}.modulehead p{color:var(--muted);font-size:12px;margin:0}.table-wrap{overflow:auto;padding:0 12px 14px}table{border-collapse:collapse;width:100%;font-size:12px;white-space:nowrap}th{text-align:right;font-size:10px;text-transform:uppercase;letter-spacing:.55px;color:var(--muted2);font-weight:750;padding:12px 10px;border-bottom:1px solid var(--stroke)}td{text-align:right;padding:11px 10px;border-bottom:1px solid #233044;color:#cad7e3;font-variant-numeric:tabular-nums}tr:last-child td{border-bottom:0}tr:hover td{background:#ffffff06}th:nth-child(2),td:nth-child(2){text-align:left}th:first-child,td:first-child{text-align:center}.tname{color:var(--text);font-weight:690;white-space:nowrap}.rank{display:inline-grid;place-items:center;border-radius:8px;background:#202e42;width:23px;height:23px;color:#d8e4ee;font-weight:800}.rank.seed{background:#eab76c25;color:#f4c885}.delta{font-weight:750}.delta.up{color:var(--green)}.delta.down{color:var(--red)}.delta.flat{color:var(--muted2)}.subtle{color:var(--muted)}.seeds{padding:0 20px 20px;display:grid;grid-template-columns:1fr 1fr;gap:17px}.seed-title{font-weight:760;color:#cad8e6;font-size:12px;margin:0 0 9px}.seedline{display:flex;gap:9px;align-items:center;border-bottom:1px solid #26364a;padding:10px 0;font-size:12px;min-width:0}.seedline:last-child{border-bottom:0}.seednum{font-size:11px;color:var(--accent);font-weight:800;width:17px;flex:none}.seedline .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}.seed-new{color:var(--green);font-weight:800;margin-left:auto}.panelnote{padding:0 20px 19px;color:var(--muted2);font-size:11px}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:20px}.weeks{display:flex;gap:7px;align-items:center;flex-wrap:wrap}.weeks button{border:1px solid #36485e;background:var(--surface2);border-radius:8px;padding:8px 10px;color:var(--muted);font-weight:700;font-size:11px}.weeks button.sel{color:#19202a;background:var(--accent);border-color:var(--accent)}.weeklyrows{padding:0 20px 20px;display:grid;gap:11px}.wkrow{display:grid;grid-template-columns:30px minmax(95px,1fr) 58px 1.25fr 50px;gap:8px;align-items:center;font-size:11px}.wklabel{color:var(--text);font-weight:690;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.wkbar{height:8px;background:#213044;border-radius:12px;overflow:hidden}.wkbar .fill{height:100%;border-radius:12px;background:linear-gradient(90deg,#3b7f98,var(--cyan))}.wkbar .fill.top{background:linear-gradient(90deg,#b07735,var(--accent))}.wkscore{font-variant-numeric:tabular-nums;text-align:right;color:#d8e8ef;font-weight:700}.winmark{border-radius:6px;padding:3px 4px;text-align:center;background:#18382d;color:var(--green);font-weight:800;font-size:10px}.winmark.loss{background:#432a34;color:var(--red)}.winmark.tie{background:#343849;color:var(--muted)}.explain{padding:18px 20px 21px}.explain h3{font-size:13px;margin:0 0 9px}.explain p{font-size:12px;color:var(--muted);margin:0 0 13px}.explain p:last-child{margin-bottom:0}.history{padding:0 15px 16px}.history table th,.history table td{text-align:left}.history table th:last-child,.history table td:last-child{text-align:right}.footer{border-top:1px solid #2d3a4a;color:var(--muted2);font-size:11px;margin:32px 0 0;padding:17px 0;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}.overline{display:flex;gap:8px;align-items:center}.legend{padding:0 20px 16px;color:var(--muted);font-size:11px}.dot{width:8px;height:8px;border-radius:50%;display:inline-block;background:var(--accent)}.sourcebanner{border:1px solid #79572a;background:#ac782b17;border-radius:10px;color:#ecd1a9;padding:11px 14px;font-size:12px;margin:0 0 16px}.sourcebanner.good{border-color:#2b6459;background:#19554a22;color:#a5e2ce}.nowrap{white-space:nowrap}@media(max-width:1000px){.controls{grid-template-columns:1fr 1fr}.controls .formatcontrol{grid-column:1/-1}.cols{grid-template-columns:1fr}.grid2{grid-template-columns:1fr}.source-box{text-align:left}.hero{align-items:flex-start}}@media(max-width:650px){.shell{padding:0 12px 30px}.navinner{padding:12px}.hero{padding-top:26px;display:block}.hero h1{font-size:35px}.hero .source-box{margin-top:15px}.controls{grid-template-columns:1fr 1fr;padding:14px;gap:12px}.metrics{gap:9px}.stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.metric{padding:15px}.metric .number{font-size:24px}.modulehead{padding:17px 14px 12px}.seeds{padding:0 12px 12px;gap:9px}.seedline{font-size:10px;gap:5px}.table-wrap{padding:0 4px 10px}td,th{padding:10px 8px}.wkrow{grid-template-columns:25px minmax(72px,1fr) 50px 1fr 44px;gap:5px}.weeklyrows{padding:0 12px 15px}.segments{gap:5px}.seg{padding:9px}.source-box{max-width:100%}}@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="topbar"><div class="navinner"><div class="brand"><span class="brandmark">LR</span><span>League Rules Lab</span></div><div class="overline"><span class="pill">Read-only analysis</span><span id="source-badge" class="pill demo">Sample data</span></div></div></div>
+<main class="shell">
+<header class="hero"><div><div class="eyebrow">Fantasy football · Format comparison</div><h1>One league.<br><span style="color:var(--accent)">Four realities.</span></h1><p>See how head-to-head schedules, league median games, all-play standings and total points change your playoff picture. No ESPN login required to view this dashboard.</p></div><div class="source-box"><strong id="league-title">League Rules Lab Sample League</strong><span id="source-time">Data last updated: sample fixture</span></div></header>
+<div id="banner" class="sourcebanner">SIMULATED DATA — scores and rankings are fictional. ESPN public-league access has not yet been verified from this environment.</div>
+<section class="controls panel" aria-label="Dashboard filters"><div class="control"><label for="season">Season</label><select id="season"></select></div><div class="control"><label for="through">Standings through</label><select id="through"></select></div><div class="control formatcontrol"><label>Standings method</label><div class="segments" id="formatbuttons" role="group" aria-label="Scoring format"><button class="seg" data-format="h2h">H2H</button><button class="seg active" data-format="hybrid">H2H + Median</button><button class="seg" data-format="allplay">All-Play</button><button class="seg" data-format="points">Total Points</button></div></div></section>
+<section class="stats" aria-label="Season highlights"><article class="metric panel"><div class="label">Completed weeks analyzed</div><div class="number" id="s-weeks">—</div><div class="foot" id="s-weekfoot">Regular-season weeks only</div></article><article class="metric panel"><div class="label">Playoff teams changed vs. H2H</div><div class="number gold" id="s-change">—</div><div class="foot">Different qualifiers, same number of spots</div></article><article class="metric panel"><div class="label">Highest total points</div><div class="number" id="s-scoring">—</div><div class="foot" id="s-scoringfoot">—</div></article><article class="metric panel"><div class="label">Biggest rank improvement</div><div class="number cyan" id="s-rise">—</div><div class="foot" id="s-risefoot">Compared with traditional H2H</div></article></section>
+<section class="cols"><article class="panel"><header class="modulehead"><div><h2 id="standtitle">Alternative standings</h2><p>Calculated rankings through the selected week · point totals as tiebreaker</p></div><span class="pill" id="numteams">12 teams</span></header><div class="table-wrap"><table aria-label="Calculated standings"><thead><tr><th>Seed</th><th>Team</th><th>Record</th><th>Win %</th><th>PF</th><th>All-Play %</th><th>H2H Δ</th></tr></thead><tbody id="standbody"></tbody></table></div><div class="legend"><span class="dot"></span> Gold seed = projected playoff position from selected standings. H2H Δ compares rank against traditional H2H.</div></article><article class="panel"><header class="modulehead"><div><h2>Playoff field comparison</h2><p>Who would qualify under each ruleset?</p></div></header><div class="seeds"><div><div class="seed-title">Traditional H2H</div><div id="seed-baseline"></div></div><div><div class="seed-title" id="seed-altlabel">H2H + Median</div><div id="seed-alternate"></div></div></div><div class="panelnote">Illustrative seeds based on standings. Divisions, ESPN's specific tiebreakers and alternative playoff bracket outcomes are not yet modeled.</div></article></section>
+<section class="grid2"><article class="panel"><header class="modulehead"><div><h2>Week-by-week scores</h2><p>Sorts every team by points in a selected week</p></div><select id="weekdetail" style="width:116px" aria-label="Weekly results week"></select></header><div id="weeklegend" class="legend">—</div><div class="weeklyrows" id="weeklyrows"></div></article><article class="panel"><header class="modulehead"><div><h2>Why the standings change</h2><p>Consistent scoring vs. favorable schedules</p></div></header><div class="explain"><h3>H2H</h3><p>Each scheduled matchup is worth one win, loss or tie. Opponent luck affects the result.</p><h3>H2H + league median</h3><p>Each week adds a second game: above the weekly median earns a win; below earns a loss. Exact median ties count as half a win.</p><h3>All-play</h3><p>Each team is compared against every other team's score that week. A 12-team league creates 11 potential wins per week.</p><h3>Total points</h3><p>Standings ignore the matchup schedule and rank teams strictly by accumulated fantasy points.</p><h3>Current prototype assumptions</h3><p>One matchup per team per week, no byes or doubleheaders, completed weeks only. Equal standings records break on points for. Adjust division/playoff tiebreakers before any league vote.</p></div></article></section>
+<section class="panel"><header class="modulehead"><div><h2>Season-by-season impact</h2><p>How often the alternate format changes the playoff field</p></div><span class="pill">Historical view</span></header><div class="history"><div class="table-wrap"><table><thead><tr><th>Season</th><th>Weeks with results</th><th>H2H points leader seed</th><th id="history-label">Playoff teams changed (median)</th></tr></thead><tbody id="historybody"></tbody></table></div></div><div class="panelnote">Older seasons may require authenticated ESPN access even if the current season is publicly viewable.</div></section>
+<footer class="footer"><div>League Rules Lab proof of concept · Built for league discussion, not official ESPN standings</div><div id="status-footer">Data provenance: simulated · No login required</div></footer>
+</main>
+<script>
+window.DEMO_DATA = {
+  "type": "demo",
+  "league_name": "League Rules Lab \u2022 Sample League",
+  "updated": "2026-11-06T20:00:00Z",
+  "source_note": "Fictional data generated for demonstration. Not an ESPN score feed.",
+  "public_test_target": {
+    "league_id": "42654852",
+    "season": 2026,
+    "name": "FFLR Test League"
+  },
+  "seasons": {
+    "2024": {
+      "teams": [
+        {
+          "id": "1",
+          "name": "The Empire"
+        },
+        {
+          "id": "2",
+          "name": "Team Alpha"
+        },
+        {
+          "id": "3",
+          "name": "Team Bravo"
+        },
+        {
+          "id": "4",
+          "name": "Team Charlie"
+        },
+        {
+          "id": "5",
+          "name": "Team Delta"
+        },
+        {
+          "id": "6",
+          "name": "Team Echo"
+        },
+        {
+          "id": "7",
+          "name": "Team Foxtrot"
+        },
+        {
+          "id": "8",
+          "name": "Team Golf"
+        },
+        {
+          "id": "9",
+          "name": "Team Hotel"
+        },
+        {
+          "id": "10",
+          "name": "Team India"
+        },
+        {
+          "id": "11",
+          "name": "Team Juliet"
+        },
+        {
+          "id": "12",
+          "name": "Team Kilo"
+        }
+      ],
+      "weeks": [
+        {
+          "week": 1,
+          "scores": {
+            "1": 111.28,
+            "2": 84.11,
+            "3": 68.34,
+            "4": 106.02,
+            "5": 79.35,
+            "6": 107.08,
+            "7": 116.31,
+            "8": 113.89,
+            "9": 102.93,
+            "10": 105.61,
+            "11": 95.55,
+            "12": 129.1
+          },
+          "matchups": [
+            [
+              "1",
+              "12"
+            ],
+            [
+              "2",
+              "11"
+            ],
+            [
+              "3",
+              "10"
+            ],
+            [
+              "4",
+              "9"
+            ],
+            [
+              "5",
+              "8"
+            ],
+            [
+              "6",
+              "7"
+            ]
+          ]
+        },
+        {
+          "week": 2,
+          "scores": {
+            "1": 155.75,
+            "2": 136.75,
+            "3": 123.09,
+            "4": 145.74,
+            "5": 105.28,
+            "6": 137.74,
+            "7": 133.04,
+            "8": 119.92,
+            "9": 108.42,
+            "10": 131.34,
+            "11": 101.6,
+            "12": 127.96
+          },
+          "matchups": [
+            [
+              "1",
+              "11"
+            ],
+            [
+              "12",
+              "10"
+            ],
+            [
+              "2",
+              "9"
+            ],
+            [
+              "3",
+              "8"
+            ],
+            [
+              "4",
+              "7"
+            ],
+            [
+              "5",
+              "6"
+            ]
+          ]
+        },
+        {
+          "week": 3,
+          "scores": {
+            "1": 137.67,
+            "2": 118.08,
+            "3": 104.33,
+            "4": 119.65,
+            "5": 121.81,
+            "6": 106.09,
+            "7": 74.24,
+            "8": 105.15,
+            "9": 149.41,
+            "10": 108.31,
+            "11": 142.55,
+            "12": 97.79
+          },
+          "matchups": [
+            [
+              "1",
+              "10"
+            ],
+            [
+              "11",
+              "9"
+            ],
+            [
+              "12",
+              "8"
+            ],
+            [
+              "2",
+              "7"
+            ],
+            [
+              "3",
+              "6"
+            ],
+            [
+              "4",
+              "5"
+            ]
+          ]
+        },
+        {
+          "week": 4,
+          "scores": {
+            "1": 100.26,
+            "2": 132.38,
+            "3": 104.92,
+            "4": 145.53,
+            "5": 124.65,
+            "6": 119.1,
+            "7": 108.58,
+            "8": 112.3,
+            "9": 107.47,
+            "10": 55.75,
+            "11": 156.65,
+            "12": 121.36
+          },
+          "matchups": [
+            [
+              "1",
+              "9"
+            ],
+            [
+              "10",
+              "8"
+            ],
+            [
+              "11",
+              "7"
+            ],
+            [
+              "12",
+              "6"
+            ],
+            [
+              "2",
+              "5"
+            ],
+            [
+              "3",
+              "4"
+            ]
+          ]
+        },
+        {
+          "week": 5,
+          "scores": {
+            "1": 109.45,
+            "2": 78.74,
+            "3": 127.97,
+            "4": 175.23,
+            "5": 144.14,
+            "6": 79.4,
+            "7": 118.42,
+            "8": 114.88,
+            "9": 129.83,
+            "10": 83.34,
+            "11": 106.31,
+            "12": 109.62
+          },
+          "matchups": [
+            [
+              "1",
+              "8"
+            ],
+            [
+              "9",
+              "7"
+            ],
+            [
+              "10",
+              "6"
+            ],
+            [
+              "11",
+              "5"
+            ],
+            [
+              "12",
+              "4"
+            ],
+            [
+              "2",
+              "3"
+            ]
+          ]
+        },
+        {
+          "week": 6,
+          "scores": {
+            "1": 138.04,
+            "2": 95.25,
+            "3": 112.13,
+            "4": 121.8,
+            "5": 85.77,
+            "6": 96.78,
+            "7": 158.28,
+            "8": 87.99,
+            "9": 102.36,
+            "10": 128.76,
+            "11": 114.26,
+            "12": 127.69
+          },
+          "matchups": [
+            [
+              "1",
+              "7"
+            ],
+            [
+              "8",
+              "6"
+            ],
+            [
+              "9",
+              "5"
+            ],
+            [
+              "10",
+              "4"
+            ],
+            [
+              "11",
+              "3"
+            ],
+            [
+              "12",
+              "2"
+            ]
+          ]
+        },
+        {
+          "week": 7,
+          "scores": {
+            "1": 143.67,
+            "2": 105.17,
+            "3": 108.07,
+            "4": 138.55,
+            "5": 132.4,
+            "6": 125.89,
+            "7": 107.26,
+            "8": 126.04,
+            "9": 139.14,
+            "10": 106.51,
+            "11": 122.7,
+            "12": 124.2
+          },
+          "matchups": [
+            [
+              "1",
+              "6"
+            ],
+            [
+              "7",
+              "5"
+            ],
+            [
+              "8",
+              "4"
+            ],
+            [
+              "9",
+              "3"
+            ],
+            [
+              "10",
+              "2"
+            ],
+            [
+              "11",
+              "12"
+            ]
+          ]
+        },
+        {
+          "week": 8,
+          "scores": {
+            "1": 130.87,
+            "2": 72.56,
+            "3": 138.39,
+            "4": 120.33,
+            "5": 141.51,
+            "6": 118.99,
+            "7": 104.8,
+            "8": 91.96,
+            "9": 123.62,
+            "10": 116.55,
+            "11": 84.23,
+            "12": 125.87
+          },
+          "matchups": [
+            [
+              "1",
+              "5"
+            ],
+            [
+              "6",
+              "4"
+            ],
+            [
+              "7",
+              "3"
+            ],
+            [
+              "8",
+              "2"
+            ],
+            [
+              "9",
+              "12"
+            ],
+            [
+              "10",
+              "11"
+            ]
+          ]
+        },
+        {
+          "week": 9,
+          "scores": {
+            "1": 123.01,
+            "2": 133.49,
+            "3": 133.96,
+            "4": 126.83,
+            "5": 106.16,
+            "6": 112.3,
+            "7": 80.04,
+            "8": 97.26,
+            "9": 156.79,
+            "10": 80.89,
+            "11": 100.06,
+            "12": 141.41
+          },
+          "matchups": [
+            [
+              "1",
+              "4"
+            ],
+            [
+              "5",
+              "3"
+            ],
+            [
+              "6",
+              "2"
+            ],
+            [
+              "7",
+              "12"
+            ],
+            [
+              "8",
+              "11"
+            ],
+            [
+              "9",
+              "10"
+            ]
+          ]
+        },
+        {
+          "week": 10,
+          "scores": {
+            "1": 122.8,
+            "2": 140.39,
+            "3": 127.66,
+            "4": 149.69,
+            "5": 109.58,
+            "6": 101.95,
+            "7": 115.44,
+            "8": 151.4,
+            "9": 87.47,
+            "10": 96.75,
+            "11": 115.33,
+            "12": 95.83
+          },
+          "matchups": [
+            [
+              "1",
+              "3"
+            ],
+            [
+              "4",
+              "2"
+            ],
+            [
+              "5",
+              "12"
+            ],
+            [
+              "6",
+              "11"
+            ],
+            [
+              "7",
+              "10"
+            ],
+            [
+              "8",
+              "9"
+            ]
+          ]
+        },
+        {
+          "week": 11,
+          "scores": {
+            "1": 98.32,
+            "2": 80.56,
+            "3": 115.39,
+            "4": 97.56,
+            "5": 86.26,
+            "6": 97.36,
+            "7": 141.15,
+            "8": 125.37,
+            "9": 122.56,
+            "10": 99.79,
+            "11": 148.27,
+            "12": 108.44
+          },
+          "matchups": [
+            [
+              "1",
+              "2"
+            ],
+            [
+              "3",
+              "12"
+            ],
+            [
+              "4",
+              "11"
+            ],
+            [
+              "5",
+              "10"
+            ],
+            [
+              "6",
+              "9"
+            ],
+            [
+              "7",
+              "8"
+            ]
+          ]
+        },
+        {
+          "week": 12,
+          "scores": {
+            "1": 113.24,
+            "2": 87.82,
+            "3": 124.51,
+            "4": 119.28,
+            "5": 106.96,
+            "6": 131.1,
+            "7": 89.94,
+            "8": 78.97,
+            "9": 106.09,
+            "10": 89.47,
+            "11": 116.22,
+            "12": 138.96
+          },
+          "matchups": [
+            [
+              "1",
+              "12"
+            ],
+            [
+              "2",
+              "11"
+            ],
+            [
+              "3",
+              "10"
+            ],
+            [
+              "4",
+              "9"
+            ],
+            [
+              "5",
+              "8"
+            ],
+            [
+              "6",
+              "7"
+            ]
+          ]
+        },
+        {
+          "week": 13,
+          "scores": {
+            "1": 92.16,
+            "2": 125.73,
+            "3": 121.87,
+            "4": 113.85,
+            "5": 114.55,
+            "6": 126.01,
+            "7": 74.97,
+            "8": 97.96,
+            "9": 104.44,
+            "10": 75.17,
+            "11": 119.21,
+            "12": 94.47
+          },
+          "matchups": [
+            [
+              "1",
+              "11"
+            ],
+            [
+              "12",
+              "10"
+            ],
+            [
+              "2",
+              "9"
+            ],
+            [
+              "3",
+              "8"
+            ],
+            [
+              "4",
+              "7"
+            ],
+            [
+              "5",
+              "6"
+            ]
+          ]
+        },
+        {
+          "week": 14,
+          "scores": {
+            "1": 106.29,
+            "2": 150.4,
+            "3": 95.8,
+            "4": 143.48,
+            "5": 103.3,
+            "6": 138.54,
+            "7": 121.05,
+            "8": 146.47,
+            "9": 152.53,
+            "10": 122.63,
+            "11": 122.16,
+            "12": 155.55
+          },
+          "matchups": [
+            [
+              "1",
+              "10"
+            ],
+            [
+              "11",
+              "9"
+            ],
+            [
+              "12",
+              "8"
+            ],
+            [
+              "2",
+              "7"
+            ],
+            [
+              "3",
+              "6"
+            ],
+            [
+              "4",
+              "5"
+            ]
+          ]
+        }
+      ],
+      "regular_season_weeks": 14,
+      "playoff_teams": 6,
+      "status": "SIMULATED",
+      "league_id": null
+    },
+    "2025": {
+      "teams": [
+        {
+          "id": "1",
+          "name": "The Empire"
+        },
+        {
+          "id": "2",
+          "name": "Team Alpha"
+        },
+        {
+          "id": "3",
+          "name": "Team Bravo"
+        },
+        {
+          "id": "4",
+          "name": "Team Charlie"
+        },
+        {
+          "id": "5",
+          "name": "Team Delta"
+        },
+        {
+          "id": "6",
+          "name": "Team Echo"
+        },
+        {
+          "id": "7",
+          "name": "Team Foxtrot"
+        },
+        {
+          "id": "8",
+          "name": "Team Golf"
+        },
+        {
+          "id": "9",
+          "name": "Team Hotel"
+        },
+        {
+          "id": "10",
+          "name": "Team India"
+        },
+        {
+          "id": "11",
+          "name": "Team Juliet"
+        },
+        {
+          "id": "12",
+          "name": "Team Kilo"
+        }
+      ],
+      "weeks": [
+        {
+          "week": 1,
+          "scores": {
+            "1": 121.55,
+            "2": 88.0,
+            "3": 113.7,
+            "4": 101.83,
+            "5": 81.2,
+            "6": 118.66,
+            "7": 143.13,
+            "8": 75.87,
+            "9": 163.03,
+            "10": 72.81,
+            "11": 102.03,
+            "12": 105.93
+          },
+          "matchups": [
+            [
+              "1",
+              "12"
+            ],
+            [
+              "2",
+              "11"
+            ],
+            [
+              "3",
+              "10"
+            ],
+            [
+              "4",
+              "9"
+            ],
+            [
+              "5",
+              "8"
+            ],
+            [
+              "6",
+              "7"
+            ]
+          ]
+        },
+        {
+          "week": 2,
+          "scores": {
+            "1": 99.79,
+            "2": 129.12,
+            "3": 108.66,
+            "4": 143.08,
+            "5": 95.23,
+            "6": 105.87,
+            "7": 116.81,
+            "8": 111.6,
+            "9": 116.71,
+            "10": 141.17,
+            "11": 104.66,
+            "12": 120.2
+          },
+          "matchups": [
+            [
+              "1",
+              "11"
+            ],
+            [
+              "12",
+              "10"
+            ],
+            [
+              "2",
+              "9"
+            ],
+            [
+              "3",
+              "8"
+            ],
+            [
+              "4",
+              "7"
+            ],
+            [
+              "5",
+              "6"
+            ]
+          ]
+        },
+        {
+          "week": 3,
+          "scores": {
+            "1": 79.65,
+            "2": 124.67,
+            "3": 99.66,
+            "4": 122.7,
+            "5": 119.16,
+            "6": 114.33,
+            "7": 79.08,
+            "8": 86.85,
+            "9": 130.33,
+            "10": 76.98,
+            "11": 68.18,
+            "12": 74.24
+          },
+          "matchups": [
+            [
+              "1",
+              "10"
+            ],
+            [
+              "11",
+              "9"
+            ],
+            [
+              "12",
+              "8"
+            ],
+            [
+              "2",
+              "7"
+            ],
+            [
+              "3",
+              "6"
+            ],
+            [
+              "4",
+              "5"
+            ]
+          ]
+        },
+        {
+          "week": 4,
+          "scores": {
+            "1": 156.44,
+            "2": 125.18,
+            "3": 115.19,
+            "4": 73.91,
+            "5": 136.74,
+            "6": 86.03,
+            "7": 162.92,
+            "8": 96.01,
+            "9": 113.09,
+            "10": 71.89,
+            "11": 111.8,
+            "12": 112.3
+          },
+          "matchups": [
+            [
+              "1",
+              "9"
+            ],
+            [
+              "10",
+              "8"
+            ],
+            [
+              "11",
+              "7"
+            ],
+            [
+              "12",
+              "6"
+            ],
+            [
+              "2",
+              "5"
+            ],
+            [
+              "3",
+              "4"
+            ]
+          ]
+        },
+        {
+          "week": 5,
+          "scores": {
+            "1": 113.58,
+            "2": 126.15,
+            "3": 137.17,
+            "4": 141.57,
+            "5": 124.39,
+            "6": 124.77,
+            "7": 96.46,
+            "8": 121.29,
+            "9": 111.61,
+            "10": 128.81,
+            "11": 95.46,
+            "12": 96.62
+          },
+          "matchups": [
+            [
+              "1",
+              "8"
+            ],
+            [
+              "9",
+              "7"
+            ],
+            [
+              "10",
+              "6"
+            ],
+            [
+              "11",
+              "5"
+            ],
+            [
+              "12",
+              "4"
+            ],
+            [
+              "2",
+              "3"
+            ]
+          ]
+        },
+        {
+          "week": 6,
+          "scores": {
+            "1": 142.01,
+            "2": 117.77,
+            "3": 129.14,
+            "4": 114.55,
+            "5": 132.65,
+            "6": 98.4,
+            "7": 89.18,
+            "8": 130.36,
+            "9": 144.18,
+            "10": 154.06,
+            "11": 140.71,
+            "12": 129.36
+          },
+          "matchups": [
+            [
+              "1",
+              "7"
+            ],
+            [
+              "8",
+              "6"
+            ],
+            [
+              "9",
+              "5"
+            ],
+            [
+              "10",
+              "4"
+            ],
+            [
+              "11",
+              "3"
+            ],
+            [
+              "12",
+              "2"
+            ]
+          ]
+        },
+        {
+          "week": 7,
+          "scores": {
+            "1": 96.72,
+            "2": 119.12,
+            "3": 96.98,
+            "4": 123.54,
+            "5": 115.7,
+            "6": 114.62,
+            "7": 135.78,
+            "8": 129.91,
+            "9": 110.44,
+            "10": 103.92,
+            "11": 129.72,
+            "12": 88.09
+          },
+          "matchups": [
+            [
+              "1",
+              "6"
+            ],
+            [
+              "7",
+              "5"
+            ],
+            [
+              "8",
+              "4"
+            ],
+            [
+              "9",
+              "3"
+            ],
+            [
+              "10",
+              "2"
+            ],
+            [
+              "11",
+              "12"
+            ]
+          ]
+        },
+        {
+          "week": 8,
+          "scores": {
+            "1": 98.0,
+            "2": 81.27,
+            "3": 125.09,
+            "4": 93.73,
+            "5": 110.1,
+            "6": 118.48,
+            "7": 94.6,
+            "8": 91.38,
+            "9": 137.09,
+            "10": 119.33,
+            "11": 118.38,
+            "12": 78.78
+          },
+          "matchups": [
+            [
+              "1",
+              "5"
+            ],
+            [
+              "6",
+              "4"
+            ],
+            [
+              "7",
+              "3"
+            ],
+            [
+              "8",
+              "2"
+            ],
+            [
+              "9",
+              "12"
+            ],
+            [
+              "10",
+              "11"
+            ]
+          ]
+        },
+        {
+          "week": 9,
+          "scores": {
+            "1": 171.17,
+            "2": 126.8,
+            "3": 116.85,
+            "4": 174.22,
+            "5": 118.07,
+            "6": 123.38,
+            "7": 96.48,
+            "8": 94.63,
+            "9": 118.2,
+            "10": 87.13,
+            "11": 91.07,
+            "12": 107.03
+          },
+          "matchups": [
+            [
+              "1",
+              "4"
+            ],
+            [
+              "5",
+              "3"
+            ],
+            [
+              "6",
+              "2"
+            ],
+            [
+              "7",
+              "12"
+            ],
+            [
+              "8",
+              "11"
+            ],
+            [
+              "9",
+              "10"
+            ]
+          ]
+        },
+        {
+          "week": 10,
+          "scores": {
+            "1": 94.35,
+            "2": 134.14,
+            "3": 85.1,
+            "4": 119.15,
+            "5": 126.2,
+            "6": 122.89,
+            "7": 90.96,
+            "8": 127.25,
+            "9": 147.95,
+            "10": 112.11,
+            "11": 107.13,
+            "12": 135.17
+          },
+          "matchups": [
+            [
+              "1",
+              "3"
+            ],
+            [
+              "4",
+              "2"
+            ],
+            [
+              "5",
+              "12"
+            ],
+            [
+              "6",
+              "11"
+            ],
+            [
+              "7",
+              "10"
+            ],
+            [
+              "8",
+              "9"
+            ]
+          ]
+        },
+        {
+          "week": 11,
+          "scores": {
+            "1": 111.2,
+            "2": 82.31,
+            "3": 133.39,
+            "4": 135.07,
+            "5": 102.51,
+            "6": 129.26,
+            "7": 48.19,
+            "8": 108.57,
+            "9": 94.86,
+            "10": 55.6,
+            "11": 142.71,
+            "12": 152.36
+          },
+          "matchups": [
+            [
+              "1",
+              "2"
+            ],
+            [
+              "3",
+              "12"
+            ],
+            [
+              "4",
+              "11"
+            ],
+            [
+              "5",
+              "10"
+            ],
+            [
+              "6",
+              "9"
+            ],
+            [
+              "7",
+              "8"
+            ]
+          ]
+        },
+        {
+          "week": 12,
+          "scores": {
+            "1": 113.34,
+            "2": 81.3,
+            "3": 116.33,
+            "4": 102.09,
+            "5": 90.18,
+            "6": 84.86,
+            "7": 113.6,
+            "8": 126.74,
+            "9": 107.27,
+            "10": 121.03,
+            "11": 98.77,
+            "12": 104.06
+          },
+          "matchups": [
+            [
+              "1",
+              "12"
+            ],
+            [
+              "2",
+              "11"
+            ],
+            [
+              "3",
+              "10"
+            ],
+            [
+              "4",
+              "9"
+            ],
+            [
+              "5",
+              "8"
+            ],
+            [
+              "6",
+              "7"
+            ]
+          ]
+        },
+        {
+          "week": 13,
+          "scores": {
+            "1": 151.1,
+            "2": 143.9,
+            "3": 98.49,
+            "4": 143.9,
+            "5": 84.89,
+            "6": 80.21,
+            "7": 129.14,
+            "8": 105.43,
+            "9": 134.2,
+            "10": 103.76,
+            "11": 92.32,
+            "12": 86.94
+          },
+          "matchups": [
+            [
+              "1",
+              "11"
+            ],
+            [
+              "12",
+              "10"
+            ],
+            [
+              "2",
+              "9"
+            ],
+            [
+              "3",
+              "8"
+            ],
+            [
+              "4",
+              "7"
+            ],
+            [
+              "5",
+              "6"
+            ]
+          ]
+        },
+        {
+          "week": 14,
+          "scores": {
+            "1": 115.05,
+            "2": 113.02,
+            "3": 126.63,
+            "4": 120.26,
+            "5": 88.25,
+            "6": 87.78,
+            "7": 46.49,
+            "8": 101.15,
+            "9": 104.36,
+            "10": 110.04,
+            "11": 86.39,
+            "12": 117.19
+          },
+          "matchups": [
+            [
+              "1",
+              "10"
+            ],
+            [
+              "11",
+              "9"
+            ],
+            [
+              "12",
+              "8"
+            ],
+            [
+              "2",
+              "7"
+            ],
+            [
+              "3",
+              "6"
+            ],
+            [
+              "4",
+              "5"
+            ]
+          ]
+        }
+      ],
+      "regular_season_weeks": 14,
+      "playoff_teams": 6,
+      "status": "SIMULATED",
+      "league_id": null
+    },
+    "2026": {
+      "teams": [
+        {
+          "id": "1",
+          "name": "The Empire"
+        },
+        {
+          "id": "2",
+          "name": "Team Alpha"
+        },
+        {
+          "id": "3",
+          "name": "Team Bravo"
+        },
+        {
+          "id": "4",
+          "name": "Team Charlie"
+        },
+        {
+          "id": "5",
+          "name": "Team Delta"
+        },
+        {
+          "id": "6",
+          "name": "Team Echo"
+        },
+        {
+          "id": "7",
+          "name": "Team Foxtrot"
+        },
+        {
+          "id": "8",
+          "name": "Team Golf"
+        },
+        {
+          "id": "9",
+          "name": "Team Hotel"
+        },
+        {
+          "id": "10",
+          "name": "Team India"
+        },
+        {
+          "id": "11",
+          "name": "Team Juliet"
+        },
+        {
+          "id": "12",
+          "name": "Team Kilo"
+        }
+      ],
+      "weeks": [
+        {
+          "week": 1,
+          "scores": {
+            "1": 124.75,
+            "2": 129.95,
+            "3": 160.57,
+            "4": 163.12,
+            "5": 123.81,
+            "6": 139.66,
+            "7": 86.04,
+            "8": 143.17,
+            "9": 123.85,
+            "10": 131.63,
+            "11": 122.68,
+            "12": 109.56
+          },
+          "matchups": [
+            [
+              "1",
+              "12"
+            ],
+            [
+              "2",
+              "11"
+            ],
+            [
+              "3",
+              "10"
+            ],
+            [
+              "4",
+              "9"
+            ],
+            [
+              "5",
+              "8"
+            ],
+            [
+              "6",
+              "7"
+            ]
+          ]
+        },
+        {
+          "week": 2,
+          "scores": {
+            "1": 106.07,
+            "2": 101.24,
+            "3": 126.61,
+            "4": 129.88,
+            "5": 115.0,
+            "6": 136.03,
+            "7": 75.43,
+            "8": 125.26,
+            "9": 150.43,
+            "10": 122.4,
+            "11": 126.02,
+            "12": 144.26
+          },
+          "matchups": [
+            [
+              "1",
+              "11"
+            ],
+            [
+              "12",
+              "10"
+            ],
+            [
+              "2",
+              "9"
+            ],
+            [
+              "3",
+              "8"
+            ],
+            [
+              "4",
+              "7"
+            ],
+            [
+              "5",
+              "6"
+            ]
+          ]
+        },
+        {
+          "week": 3,
+          "scores": {
+            "1": 94.56,
+            "2": 103.27,
+            "3": 112.25,
+            "4": 157.92,
+            "5": 97.7,
+            "6": 166.99,
+            "7": 109.85,
+            "8": 95.93,
+            "9": 124.45,
+            "10": 104.36,
+            "11": 133.41,
+            "12": 148.57
+          },
+          "matchups": [
+            [
+              "1",
+              "10"
+            ],
+            [
+              "11",
+              "9"
+            ],
+            [
+              "12",
+              "8"
+            ],
+            [
+              "2",
+              "7"
+            ],
+            [
+              "3",
+              "6"
+            ],
+            [
+              "4",
+              "5"
+            ]
+          ]
+        },
+        {
+          "week": 4,
+          "scores": {
+            "1": 72.86,
+            "2": 109.13,
+            "3": 95.75,
+            "4": 136.25,
+            "5": 102.43,
+            "6": 126.28,
+            "7": 80.06,
+            "8": 121.92,
+            "9": 94.53,
+            "10": 93.07,
+            "11": 117.93,
+            "12": 125.13
+          },
+          "matchups": [
+            [
+              "1",
+              "9"
+            ],
+            [
+              "10",
+              "8"
+            ],
+            [
+              "11",
+              "7"
+            ],
+            [
+              "12",
+              "6"
+            ],
+            [
+              "2",
+              "5"
+            ],
+            [
+              "3",
+              "4"
+            ]
+          ]
+        },
+        {
+          "week": 5,
+          "scores": {
+            "1": 77.93,
+            "2": 165.9,
+            "3": 136.81,
+            "4": 137.21,
+            "5": 86.93,
+            "6": 139.91,
+            "7": 56.6,
+            "8": 116.26,
+            "9": 106.14,
+            "10": 108.81,
+            "11": 115.98,
+            "12": 101.22
+          },
+          "matchups": [
+            [
+              "1",
+              "8"
+            ],
+            [
+              "9",
+              "7"
+            ],
+            [
+              "10",
+              "6"
+            ],
+            [
+              "11",
+              "5"
+            ],
+            [
+              "12",
+              "4"
+            ],
+            [
+              "2",
+              "3"
+            ]
+          ]
+        },
+        {
+          "week": 6,
+          "scores": {
+            "1": 125.41,
+            "2": 158.27,
+            "3": 118.51,
+            "4": 112.52,
+            "5": 110.56,
+            "6": 124.56,
+            "7": 129.4,
+            "8": 125.2,
+            "9": 101.78,
+            "10": 62.52,
+            "11": 103.94,
+            "12": 106.82
+          },
+          "matchups": [
+            [
+              "1",
+              "7"
+            ],
+            [
+              "8",
+              "6"
+            ],
+            [
+              "9",
+              "5"
+            ],
+            [
+              "10",
+              "4"
+            ],
+            [
+              "11",
+              "3"
+            ],
+            [
+              "12",
+              "2"
+            ]
+          ]
+        },
+        {
+          "week": 7,
+          "scores": {
+            "1": 120.3,
+            "2": 104.62,
+            "3": 97.58,
+            "4": 116.43,
+            "5": 91.38,
+            "6": 98.95,
+            "7": 95.55,
+            "8": 87.06,
+            "9": 150.33,
+            "10": 116.26,
+            "11": 108.54,
+            "12": 111.03
+          },
+          "matchups": [
+            [
+              "1",
+              "6"
+            ],
+            [
+              "7",
+              "5"
+            ],
+            [
+              "8",
+              "4"
+            ],
+            [
+              "9",
+              "3"
+            ],
+            [
+              "10",
+              "2"
+            ],
+            [
+              "11",
+              "12"
+            ]
+          ]
+        },
+        {
+          "week": 8,
+          "scores": {
+            "1": 94.96,
+            "2": 115.25,
+            "3": 113.19,
+            "4": 147.12,
+            "5": 100.07,
+            "6": 86.0,
+            "7": 113.17,
+            "8": 94.61,
+            "9": 126.5,
+            "10": 102.57,
+            "11": 72.6,
+            "12": 87.87
+          },
+          "matchups": [
+            [
+              "1",
+              "5"
+            ],
+            [
+              "6",
+              "4"
+            ],
+            [
+              "7",
+              "3"
+            ],
+            [
+              "8",
+              "2"
+            ],
+            [
+              "9",
+              "12"
+            ],
+            [
+              "10",
+              "11"
+            ]
+          ]
+        }
+      ],
+      "regular_season_weeks": 14,
+      "playoff_teams": 6,
+      "status": "SIMULATED",
+      "league_id": null
+    }
+  }
+};
+</script>
+<script src="data.js"></script>
+<script>
+(function(){'use strict';
+const DATA=(window.LEAGUE_DATA&&window.LEAGUE_DATA.seasons)?window.LEAGUE_DATA:window.DEMO_DATA;
+const state={year:null,through:0,week:1,format:'hybrid'};
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const num=(n,d=0)=>Number(n).toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d});
+const formats={h2h:'Traditional H2H',hybrid:'H2H + Median',allplay:'All-Play',points:'Total Points'};
+const empty=()=>({w:0,l:0,t:0});
+const add=(r,a,b)=>{if(a>b+0.000001)r.w++;else if(b>a+0.000001)r.l++;else r.t++};
+const pct=r=>{let g=r.w+r.l+r.t;return g?((r.w+r.t*.5)/g):0};
+const record=r=>`${r.w}–${r.l}${r.t?`–${r.t}`:''}`;
+const score=r=>r.w+r.t*.5;
+function calculate(season,through){
+ const teamList=season.teams.map(t=>({...t,id:String(t.id)}));
+ const teams=Object.fromEntries(teamList.map(t=>[t.id,{...t,pf:0,pa:0,h2h:empty(),median:empty(),allplay:empty(),hybrid:empty()}]));
+ let count=0;
+ for(const wk of season.weeks.filter(w=>w.week<=through).sort((a,b)=>a.week-b.week)){
+   const entries=Object.entries(wk.scores).filter(([id])=>teams[id]!==undefined).map(([id,val])=>[String(id),Number(val)]);
+   if(entries.length!==teamList.length)continue;
+   count++;
+   const vals=entries.map(e=>e[1]).sort((a,b)=>a-b);
+   const median=vals.length%2?vals[(vals.length-1)/2]:(vals[vals.length/2-1]+vals[vals.length/2])/2;
+   for(const [id,pts] of entries){
+     const team=teams[id];team.pf+=pts;
+     add(team.median,pts,median);
+     for(const [oid,oPts] of entries)if(oid!==id)add(team.allplay,pts,oPts);
+   }
+   for(const [first,second] of wk.matchups){
+     const a=teams[String(first)],b=teams[String(second)];if(!a||!b)continue;
+     const ap=Number(wk.scores[a.id]),bp=Number(wk.scores[b.id]);
+     if(!Number.isFinite(ap)||!Number.isFinite(bp))continue;
+     a.pa+=bp;b.pa+=ap;
+     add(a.h2h,ap,bp);add(b.h2h,bp,ap);
+   }
+ }
+ for(const team of Object.values(teams)){
+   team.hybrid={w:team.h2h.w+team.median.w,l:team.h2h.l+team.median.l,t:team.h2h.t+team.median.t};
+ }
+ const standings={};
+ for(const format of Object.keys(formats)){
+   standings[format]=Object.values(teams).sort((a,b)=>format==='points'?b.pf-a.pf||a.name.localeCompare(b.name):
+     pct(b[format])-pct(a[format])||b.pf-a.pf||a.name.localeCompare(b.name));
+ }
+ const h2hR=Object.fromEntries(standings.h2h.map((t,i)=>[t.id,i+1]));
+ return {standings,teams,rankH2H:h2hR,weeks:count};
+}
+function put(id,value){$(id).textContent=value}
+function render(){
+ const s=DATA.seasons[state.year];if(!s)return;
+ const c=calculate(s,state.through);const ordered=c.standings[state.format];
+ const baseline=c.standings.h2h;const slots=Math.min(s.playoff_teams||6,ordered.length);
+ put('standtitle',formats[state.format]+' standings');put('seed-altlabel',formats[state.format]);put('numteams',s.teams.length+' teams');
+ const baselineIDs=new Set(baseline.slice(0,slots).map(x=>x.id));
+ const altIDs=new Set(ordered.slice(0,slots).map(x=>x.id));
+ put('s-weeks',c.weeks);put('s-weekfoot',`Through Week ${state.through} · ${s.regular_season_weeks||'—'} regular weeks planned`);
+ put('s-change',Array.from(altIDs).filter(id=>!baselineIDs.has(id)).length);
+ const scoring=[...ordered].sort((a,b)=>b.pf-a.pf)[0];
+ put('s-scoring',scoring?num(scoring.pf,1):'—');put('s-scoringfoot',scoring?scoring.name:'—');
+ const rises=ordered.map((t,i)=>({team:t.name,gain:c.rankH2H[t.id]-(i+1)})).sort((a,b)=>b.gain-a.gain);
+ put('s-rise',rises.length&&rises[0].gain>0?'+'+rises[0].gain:'0');
+ put('s-risefoot',rises.length&&rises[0].gain>0?rises[0].team:'No rank improvements');
+ $('standbody').innerHTML=ordered.map((t,i)=>{
+   const dr=c.rankH2H[t.id]-(i+1);
+   const diff=dr>0?`<span class="delta up">▲ ${dr}</span>`:dr<0?`<span class="delta down">▼ ${-dr}</span>`:'<span class="delta flat">—</span>';
+   const rec=state.format==='points'?'—':record(t[state.format]);
+   const wp=state.format==='points'?'—':num(pct(t[state.format])*100,1)+'%';
+   return `<tr><td><span class="rank ${i<slots?'seed':''}">${i+1}</span></td><td class="tname">${esc(t.name)}</td><td>${rec}</td><td>${wp}</td><td>${num(t.pf,1)}</td><td>${num(pct(t.allplay)*100,1)}%</td><td>${diff}</td></tr>`;
+ }).join('');
+ function fillSeeds(id,rows,otherSet){
+   $(id).innerHTML=rows.slice(0,slots).map((t,i)=>`<div class="seedline"><span class="seednum">${i+1}</span><span class="nm">${esc(t.name)}</span>${otherSet&&!otherSet.has(t.id)?'<span class="seed-new">NEW</span>':''}</div>`).join('');
+ }
+ fillSeeds('seed-baseline',baseline,null);fillSeeds('seed-alternate',ordered,baselineIDs);
+ renderWeekly(s);renderHistory();
+}
+function renderWeekly(s){
+ const wk=s.weeks.find(w=>w.week===state.week);if(!wk){$('weeklyrows').textContent='No completed scores for this week.';return;}
+ const pairs=new Map();for(const [a,b] of wk.matchups){pairs.set(String(a),String(b));pairs.set(String(b),String(a))}
+ const scores=Object.entries(wk.scores).map(([id,value])=>({id:String(id),value:Number(value),name:s.teams.find(t=>String(t.id)===String(id))?.name||'Team '+id})).sort((a,b)=>b.value-a.value);
+ const values=scores.map(x=>x.value).sort((a,b)=>a-b);const mid=values.length%2?(values[(values.length-1)/2]):(values[values.length/2-1]+values[values.length/2])/2;
+ const max=Math.max(1,...scores.map(x=>x.value));
+ put('weeklegend',`Week ${state.week} · Median: ${num(mid,2)} points · ${scores.length} team scores`);
+ $('weeklyrows').innerHTML=scores.map((s,i)=>{
+  let o=pairs.get(s.id),os=o?wk.scores[o]:undefined;
+  let win=o===undefined?'—':s.value>os?'W':s.value<os?'L':'T';
+  let med=s.value>mid?'Above':s.value<mid?'Below':'Tie';
+  return `<div class="wkrow" title="Median: ${med}; H2H: ${win}"><span class="subtle">${i+1}.</span><span class="wklabel">${esc(s.name)}</span><span class="wkscore">${num(s.value,2)}</span><div class="wkbar"><div class="fill ${s.value>=mid?'top':''}" style="width:${Math.max(0,Math.min(100,s.value/max*100))}%"></div></div><span class="winmark ${win==='W'?'':win==='L'?'loss':'tie'}">${win==='—'?'—':'H2H '+win}</span></div>`;
+ }).join('');
+}
+function renderHistory(){
+ put('history-label',`Playoff teams changed (${formats[state.format]})`);
+ $('historybody').innerHTML=Object.entries(DATA.seasons).sort((a,b)=>b[0].localeCompare(a[0])).map(([year,s])=>{
+   const weeks=s.weeks.map(w=>w.week);if(!weeks.length)return '';
+   const c=calculate(s,Math.max(...weeks));const k=Math.min(s.playoff_teams||6,s.teams.length);
+   const baseline=c.standings.h2h;const alt=c.standings[state.format];
+   const bIDs=new Set(baseline.slice(0,k).map(x=>x.id));
+   const changed=alt.slice(0,k).filter(t=>!bIDs.has(t.id)).length;
+   const pfLead=[...baseline].sort((a,b)=>b.pf-a.pf)[0];
+   const h2hPos=baseline.findIndex(x=>x.id===pfLead.id)+1;
+   return `<tr><td>${esc(year)}${s.status==='SIMULATED'?' <span class="subtle">(demo)</span>':''}</td><td>${c.weeks}</td><td>#${h2hPos} · ${esc(pfLead.name)}</td><td>${changed} of ${k} teams</td></tr>`;
+ }).join('');
+}
+function setup(){
+ const isLive=DATA.type==='espn_public';
+ $('source-badge').className='pill '+(isLive?'live':'demo');put('source-badge',isLive?'Public ESPN data':'Simulated data');
+ put('league-title',DATA.league_name||'League Rules Lab');
+ let updated=DATA.updated?new Date(DATA.updated):null;
+ put('source-time',updated&&!Number.isNaN(updated.getTime())?'Data generated: '+updated.toLocaleString('en-US',{year:'numeric',month:'short',day:'numeric',hour:'numeric',minute:'2-digit',timeZone:'America/New_York',timeZoneName:'short'}):'Data timestamp unavailable');
+ $('banner').className='sourcebanner'+(isLive?' good':'');
+ put('banner',isLive?'LIVE PUBLIC ESPN DATA · This dashboard shows completed regular-season scores only; playoff seeding is illustrative. No ESPN credentials are stored here.':'SIMULATED DATA · All weekly scores and results below are fictional. The importer is configured to test a documented public ESPN league, but live access is not yet confirmed.');
+ put('status-footer',isLive?'Public ESPN scores · No login required':'Fictional fixtures · No ESPN credentials');
+ const years=Object.keys(DATA.seasons).sort((a,b)=>b.localeCompare(a));
+ $('season').innerHTML=years.map(y=>`<option value="${esc(y)}">${esc(y)}</option>`).join('');
+ state.year=years[0];
+ $('season').addEventListener('change',e=>{state.year=e.target.value;updateWeeks();render()});
+ $('through').addEventListener('change',e=>{state.through=Number(e.target.value);if(state.week>state.through)state.week=state.through;render();populateWeekDetail()});
+ $('weekdetail').addEventListener('change',e=>{state.week=Number(e.target.value);renderWeekly(DATA.seasons[state.year])});
+ $('formatbuttons').querySelectorAll('button').forEach(btn=>btn.addEventListener('click',()=>{
+   state.format=btn.dataset.format;
+   $('formatbuttons').querySelectorAll('button').forEach(b=>{b.classList.toggle('active',b===btn);b.setAttribute('aria-pressed',String(b===btn))});
+   render();
+ }));
+ updateWeeks();render();
+}
+function populateWeekDetail(){
+ const opts=DATA.seasons[state.year].weeks.filter(w=>w.week<=state.through).map(w=>w.week).sort((a,b)=>b-a);
+ if(!opts.includes(state.week))state.week=opts[0]||1;
+ $('weekdetail').innerHTML=opts.map(w=>`<option value="${w}">Week ${w}</option>`).join('');
+ $('weekdetail').value=String(state.week);
+}
+function updateWeeks(){
+ const weeks=DATA.seasons[state.year].weeks.map(w=>w.week).sort((a,b)=>a-b);
+ state.through=weeks[weeks.length-1]||1;state.week=state.through;
+ $('through').innerHTML=weeks.map(w=>`<option value="${w}">Week ${w}</option>`).join('');$('through').value=String(state.through);
+ populateWeekDetail();
+}
+try{setup()}catch(error){console.error(error);$('banner').textContent='Dashboard error: '+error.message}
+})();
+</script>
+</body></html>
