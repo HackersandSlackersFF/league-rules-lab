@@ -1,0 +1,128 @@
+name: Test 12-team ESPN league history
+on: workflow_dispatch
+permissions:
+  contents: read
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check public seasons and finalized matchups
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from urllib.error import HTTPError, URLError
+          from urllib.parse import urlencode
+          from urllib.request import Request, urlopen
+
+          candidates = [
+              (840602, 'Missouri Fantasy Season 13'),
+              (263271, 'League of Ordinary Gentlemen'),
+              (756136, 'Tour De Foxhall'),
+          ]
+          years = (2024, 2025, 2026)
+          report = ['# Public ESPN 12-team history test', '',
+                    'Credential-free, read-only. Sampled completed weeks only.', '',
+                    '| League | Season | Teams | Fully finalized sampled weeks | Result |',
+                    '|---|---:|---:|---|---|']
+
+          def fetch(league_id, year, views, week=None):
+              base = ('https://lm-api-reads.fantasy.espn.com/apis/v3/'
+                      f'games/ffl/seasons/{year}/segments/0/leagues/{league_id}')
+              params = [('view', v) for v in views]
+              if week is not None:
+                  params.extend([('matchupPeriodId', week), ('scoringPeriodId', week)])
+              req = Request(base + '?' + urlencode(params), headers={
+                  'Accept': 'application/json', 'User-Agent': 'Mozilla/5.0',
+              })
+              with urlopen(req, timeout=20) as response:
+                  data = json.load(response)
+              if not isinstance(data, dict):
+                  raise ValueError('Unexpected response instead of league JSON')
+              return data
+
+          def week_complete(schedule, week, team_ids):
+              games = [m for m in schedule
+                       if str(m.get('matchupPeriodId')) == str(week)]
+              if len(games) != len(team_ids) // 2:
+                  return False, len(games), None
+              used = []
+              first_score = None
+              for game in games:
+                  home, away = game.get('home') or {}, game.get('away') or {}
+                  if game.get('winner') not in ('HOME', 'AWAY', 'TIE'):
+                      return False, len(games), None
+                  if not all(isinstance(side.get('totalPoints'), (int, float))
+                             for side in (home, away)):
+                      return False, len(games), None
+                  used.extend([str(home.get('teamId')), str(away.get('teamId'))])
+                  if first_score is None:
+                      first_score = (home['totalPoints'], away['totalPoints'])
+              return (len(used) == len(set(used)) and set(used) == team_ids,
+                      len(games), first_score)
+
+          choice = None
+          for league_id, label in candidates:
+              print(f'\n=== {label} ({league_id}) ===', flush=True)
+              good_years = []
+              for year in years:
+                  try:
+                      data = fetch(league_id, year, ['mTeam', 'mStatus'])
+                      teams = data.get('teams') or []
+                      ids = {str(t['id']) for t in teams if 'id' in t}
+                      if len(teams) != 12 or len(ids) != 12:
+                          result = f'NOT 12 TEAMS ({len(teams)})'
+                          report.append(f'| {league_id} | {year} | {len(teams)} | — | {result} |')
+                          print(f'{year}: {result}', flush=True)
+                          continue
+                      finished = []
+                      examples = []
+                      samples = (1, 5, 10) if year < 2026 else (1, 5)
+                      for week in samples:
+                          scores = fetch(league_id, year, ['mMatchupScore'], week)
+                          complete, count, example = week_complete(
+                              scores.get('schedule') or [], week, ids)
+                          print(f'{year} Week {week}: {count} matchups; '
+                                f'{"FINAL" if complete else "incomplete"}', flush=True)
+                          if complete:
+                              finished.append(week)
+                              examples.append(example)
+                      qualified = len(finished) >= 2
+                      if qualified:
+                          good_years.append(year)
+                      result = 'PASS' if qualified else 'INSUFFICIENT FINALIZED WEEKS'
+                      print(f'{year}: {result}; final weeks {finished}', flush=True)
+                      if examples:
+                          print(f'{year} example score: {examples[0][0]} vs '
+                                f'{examples[0][1]}', flush=True)
+                      report.append(f'| {league_id} | {year} | 12 | '
+                                    f'{", ".join(map(str, finished)) or "none"} | {result} |')
+                  except (HTTPError, URLError, TimeoutError, OSError,
+                          ValueError, json.JSONDecodeError) as error:
+                      status = (f'HTTP {error.code}' if isinstance(error, HTTPError)
+                                else type(error).__name__)
+                      print(f'{year}: UNAVAILABLE ({status}): {error}', flush=True)
+                      report.append(f'| {league_id} | {year} | — | — | {status} |')
+              if len(good_years) >= 2:
+                  choice = (league_id, label, good_years)
+                  break
+
+          report.append('')
+          if choice:
+              league_id, label, good_years = choice
+              message = (f'FOUND USABLE SAMPLE: {label} (ID {league_id}), '
+                         f'years {good_years}. Next: validate every regular-season week.')
+              report.append('**' + message + '**')
+              print('\n' + message, flush=True)
+          else:
+              message = ('NO 2-SEASON SAMPLE VERIFIED. Review the per-season results '
+                         'above; historical access may be restricted by ESPN.')
+              report.append('**' + message + '**')
+              print('\n' + message, flush=True)
+          with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as summary:
+              summary.write('\n'.join(report) + '\n')
+          if not choice:
+              raise SystemExit(1)
+          PY
