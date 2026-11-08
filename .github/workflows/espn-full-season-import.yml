@@ -1,0 +1,107 @@
+name: Import public ESPN sample seasons
+on: workflow_dispatch
+permissions:
+  contents: read
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Fetch and validate completed ESPN weeks
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json, time
+          from datetime import datetime, timezone
+          from pathlib import Path
+          from urllib.parse import urlencode
+          from urllib.request import Request, urlopen
+
+          LEAGUE = 840602
+          YEARS = (2024, 2025, 2026)
+          ROOT = 'https://lm-api-reads.fantasy.espn.com/apis/v3/games/ffl'
+
+          def fetch(year, views, week=None):
+              url = f'{ROOT}/seasons/{year}/segments/0/leagues/{LEAGUE}'
+              params = [('view', v) for v in views]
+              if week is not None:
+                  params += [('matchupPeriodId', week), ('scoringPeriodId', week)]
+              req = Request(url + '?' + urlencode(params), headers={
+                  'Accept': 'application/json', 'User-Agent': 'Mozilla/5.0'
+              })
+              for attempt in range(3):
+                  try:
+                      with urlopen(req, timeout=25) as response:
+                          return json.load(response)
+                  except Exception:
+                      if attempt == 2: raise
+                      time.sleep(1 + attempt)
+
+          seasons = {}
+          latest_name = 'Missouri Fantasy Season 13'
+          for year in YEARS:
+              meta = fetch(year, ['mTeam', 'mSettings', 'mStatus'])
+              teams = meta.get('teams') or []
+              team_ids = {str(t['id']) for t in teams}
+              assert len(teams) == len(team_ids) == 12, f'{year}: not 12 distinct teams'
+              names = [{'id': str(t['id']), 'name': str(t.get('name') or f"Team {t['id']}")}
+                       for t in teams]
+              settings = (meta.get('settings') or {}).get('scheduleSettings') or {}
+              reg = int(settings.get('matchupPeriodCount') or 14)
+              assert 10 <= reg <= 18, f'{year}: unexpected regular season length {reg}'
+              playoffs = int(settings.get('playoffTeamCount') or 6)
+              latest_name = (meta.get('settings') or {}).get('name') or latest_name
+              status = meta.get('status') or {}
+              current = int(status.get('currentMatchupPeriod') or reg + 1)
+              limit = reg if year < 2026 else min(reg, max(0, current - 1))
+              normalized = []
+              for week in range(1, limit + 1):
+                  raw = fetch(year, ['mMatchupScore'], week)
+                  games = [m for m in raw.get('schedule') or []
+                           if str(m.get('matchupPeriodId')) == str(week)]
+                  scores, pairs, used = {}, [], []
+                  valid = len(games) == 6
+                  for game in games:
+                      home, away = game.get('home') or {}, game.get('away') or {}
+                      a, b = str(home.get('teamId')), str(away.get('teamId'))
+                      x, y = home.get('totalPoints'), away.get('totalPoints')
+                      if (game.get('winner') not in ('HOME', 'AWAY', 'TIE') or
+                          a == b or not isinstance(x, (int,float)) or
+                          not isinstance(y, (int,float))):
+                          valid = False; break
+                      used.extend([a,b]); scores[a] = round(float(x), 2)
+                      scores[b] = round(float(y), 2); pairs.append([a,b])
+                  valid = valid and len(used) == 12 and len(set(used)) == 12 and set(used) == team_ids
+                  if not valid:
+                      if year < 2026:
+                          raise RuntimeError(f'{year} Week {week}: incomplete historical week')
+                      print(f'{year} Week {week}: not finalized; stopping current season')
+                      break
+                  normalized.append({'week': week, 'scores': scores, 'matchups': pairs})
+              assert len(normalized) >= (10 if year < 2026 else 5), f'{year}: too few complete weeks'
+              seasons[str(year)] = {
+                  'teams': names, 'weeks': normalized,
+                  'regular_season_weeks': reg, 'playoff_teams': playoffs,
+                  'status': 'ESPN_PUBLIC', 'league_id': str(LEAGUE)
+              }
+              print(f'{year}: PASS — 12 teams, {len(normalized)} completed weeks (of {reg})')
+
+          result = {
+              'type': 'espn_public', 'league_name': latest_name,
+              'updated': datetime.now(timezone.utc).isoformat(),
+              'source_note': 'Public ESPN completed regular-season scores; read only.',
+              'public_test_target': {'league_id': str(LEAGUE), 'season': 2026},
+              'seasons': seasons
+          }
+          Path('data.js').write_text('window.LEAGUE_DATA = ' + json.dumps(result) + ';\n')
+          Path('data.json').write_text(json.dumps(result, indent=2) + '\n')
+          print('DATA EXPORT PASS: generated data.js and data.json for all seasons')
+          PY
+      - name: Downloadable dashboard data (does not publish or overwrite website)
+        uses: actions/upload-artifact@v4
+        with:
+          name: espn-sample-data
+          path: |
+            data.js
+            data.json
+          retention-days: 7
