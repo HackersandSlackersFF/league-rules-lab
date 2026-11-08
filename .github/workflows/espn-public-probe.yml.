@@ -1,0 +1,42 @@
+name: Test public ESPN football scores
+on: workflow_dispatch
+permissions:
+  contents: read
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - name: Check ESPN public league
+        run: |
+          python - <<'PY'
+          import json
+          from urllib.parse import urlencode
+          from urllib.request import Request, urlopen
+          league, year = '42654852', 2026
+          base = f'https://lm-api-reads.fantasy.espn.com/apis/v3/games/ffl/seasons/{year}/segments/0/leagues/{league}'
+          def fetch(view, week=None):
+              args = [('view', view)]
+              if week:
+                  args += [('matchupPeriodId', week), ('scoringPeriodId', week)]
+              req = Request(base+'?'+urlencode(args), headers={'Accept':'application/json','User-Agent':'Mozilla/5.0'})
+              with urlopen(req, timeout=25) as response:
+                  return json.load(response)
+          teams = fetch('mTeam').get('teams') or []
+          assert teams, 'No teams returned by public ESPN endpoint'
+          print('METADATA PASS:', len(teams), 'teams')
+          print('Teams:', ', '.join(t.get('name') or str(t['id']) for t in teams))
+          for week in (1, 2, 3):
+              games = [m for m in fetch('mMatchupScore', week).get('schedule', [])
+                       if str(m.get('matchupPeriodId')) == str(week)]
+              final = [m for m in games if m.get('winner') in ('HOME','AWAY','TIE')
+                       and isinstance((m.get('home') or {}).get('totalPoints'), (int,float))
+                       and isinstance((m.get('away') or {}).get('totalPoints'), (int,float))]
+              print('Week', week, '- finalized games:', len(final))
+              if final:
+                  m = final[0]
+                  print('WEEKLY SCORES PASS:', m['home']['totalPoints'], 'vs', m['away']['totalPoints'])
+                  break
+          else:
+              raise RuntimeError('Metadata worked, but no completed matchups found in weeks 1-3')
+          PY
